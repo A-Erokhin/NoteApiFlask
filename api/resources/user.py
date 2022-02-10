@@ -5,6 +5,41 @@ from api.schemas.user import user_schema, users_schema
 
 class UserResource(Resource):
     def get(self, user_id):
+        # language=YAML
+        """
+        Get User by id
+        ---
+        tags:
+            - Users
+        parameters:
+             - in: path
+               name: user_id
+               type: integer
+               required: true
+               default: 1
+        responses:
+           200:
+               description: A single user item
+               schema:
+                   id: User
+                   properties:
+                       id:
+                           type: integer
+                           description: user id
+                           default: 1
+                       username:
+                           type: string
+                           description: The name of the user
+                           default: Steven Wilson
+                       is_staff:
+                           type: boolean
+                           description: user is staff
+                           default: false
+                       role:
+                           type: string
+                           description: ...
+                           default: simple_user
+        """
         user = UserModel.query.get(user_id)
         if user is None:
             abort(404, error=f"User with id={user_id} not found")
@@ -12,6 +47,13 @@ class UserResource(Resource):
 
     @auth.login_required(role="admin")
     def put(self, user_id):
+        # language=YAML
+        """
+        Edit User by id
+        ---
+        tags:
+            - Users
+        """
         parser = reqparse.RequestParser()
         parser.add_argument("username", required=True)
         user_data = parser.parse_args()
