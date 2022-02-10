@@ -1,9 +1,12 @@
 from api import auth, abort, g, Resource, reqparse, db
 from api.models.note import NoteModel
 from api.schemas.note import note_schema, notes_schema
+from flask_apispec import doc
+from flask_apispec.views import MethodResource
 
 
-class NoteResource(Resource):
+@doc(description='Api for notes.', tags=['Users'])
+class NoteResource(MethodResource):
     @auth.login_required
     def get(self, note_id):
         """
@@ -54,11 +57,13 @@ class NoteResource(Resource):
         return note_schema.dump(note), 200
 
 
-class NotesListResource(Resource):
+@doc(description='Api for notes.', tags=['Users'])
+class NotesListResource(MethodResource):
     def get(self):
         notes = NoteModel.query.all()
         return notes_schema.dump(notes), 200
 
+    @doc(security=[{"basicAuth": []}])
     @auth.login_required
     def post(self):
         author = g.user

@@ -1,9 +1,13 @@
 from api import Resource, abort, reqparse, auth
 from api.models.user import UserModel
-from api.schemas.user import user_schema, users_schema
+from api.schemas.user import user_schema, users_schema, UserSchema, UserRequestSchema
+from flask_apispec.views import MethodResource
+from flask_apispec import marshal_with, use_kwargs, doc
 
 
-class UserResource(Resource):
+@doc(description='Api for notes.', tags=['Users'])
+class UserResource(MethodResource):
+    @marshal_with(UserSchema, code=200)
     def get(self, user_id):
         # language=YAML
         """
@@ -43,10 +47,13 @@ class UserResource(Resource):
         user = UserModel.query.get(user_id)
         if user is None:
             abort(404, error=f"User with id={user_id} not found")
-        return user_schema.dump(user), 200
+        # return user_schema.dump(user), 200
+        return user, 200
 
-    @auth.login_required(role="admin")
-    def put(self, user_id):
+    @use_kwargs(UserRequestSchema, location=('json'))
+    @marshal_with(UserSchema, code=201)
+    # @auth.login_required(role="admin")
+    def put(self, user_id, **kwargs):
         # language=YAML
         """
         Edit User by id
@@ -54,31 +61,35 @@ class UserResource(Resource):
         tags:
             - Users
         """
-        parser = reqparse.RequestParser()
-        parser.add_argument("username", required=True)
-        user_data = parser.parse_args()
+        # parser = reqparse.RequestParser()
+        # parser.add_argument("username", required=True)
+        user_data = UserModel(**kwargs)
         user = UserModel.query.get(user_id)
         user.username = user_data["username"]
         user.save()
-        return user_schema.dump(user), 200
+        return user, 200
 
     @auth.login_required
     def delete(self, user_id):
         raise NotImplemented  # не реализовано!
 
 
-class UsersListResource(Resource):
+@doc(description='Api for notes.', tags=['Users'])
+class UsersListResource(MethodResource):
     def get(self):
         users = UserModel.query.all()
         return users_schema.dump(users), 200
 
-    def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("username", required=True)
-        parser.add_argument("password", required=True)
-        user_data = parser.parse_args()
-        user = UserModel(**user_data)
+    @use_kwargs(UserRequestSchema, location=('json'))
+    @marshal_with(UserSchema, code=201)
+    def post(self, **kwargs):
+        # parser = reqparse.RequestParser()
+        # parser.add_argument("username", required=True)
+        # parser.add_argument("password", required=True)
+        user = UserModel(**kwargs)
+        # user = UserModel(**user_data)
         user.save()
         if not user.id:
             abort(400, error=f"User with username:{user.username} already exist")
-        return user_schema.dump(user), 201
+        # return user_schema.dump(user), 201
+        return user, 201
