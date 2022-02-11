@@ -1,8 +1,10 @@
 from api import auth, abort, g, Resource, reqparse, db
 from api.models.note import NoteModel
+from api.models.tag import TagModel
 from api.schemas.note import note_schema, notes_schema
-from flask_apispec import doc
+from flask_apispec import marshal_with, use_kwargs, doc
 from flask_apispec.views import MethodResource
+from webargs import fields
 
 
 @doc(description='Api for notes.', tags=['Users'])
@@ -37,7 +39,8 @@ class NoteResource(MethodResource):
             abort(403, error=f"Forbidden")
         note.text = note_data["text"]
 
-        note.private = note_data.get("private") or note.private
+        if note_data.get("private") is not None:
+            note.private = note_data.get("private")
 
         note.save()
         return note_schema.dump(note), 200
@@ -76,3 +79,17 @@ class NotesListResource(MethodResource):
         note = NoteModel(author_id=author.id, **note_data)
         note.save()
         return note_schema.dump(note), 201
+
+@doc(tags=["Notes"])
+class NoteAddTagResource(MethodResource):
+    @doc(summary="Add tags to note")
+    @use_kwargs({"tags": fields.List(fields.Int())})
+    def put(self, note_id, **kwargs):
+        # print("kwargs = ", kwargs)
+        note = NoteModel.query.get(note_id)
+        # TagModel.query.filter(TagModel.id.in_((2, 3))).all()
+        for tag_id in kwargs["tags"]:
+            tag = TagModel.query.get(tag_id)
+            note.tags.append(tag)
+        note.save()
+        return {}

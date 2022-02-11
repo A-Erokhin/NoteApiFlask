@@ -271,6 +271,24 @@ class TestNotes(TestCase):
     #     1. Созд. объ. через ORM
     #      2. PUT запрос
     #       3. Получ. изм. объ. через ORM
+        note_data = {"text": "Text old"}
+        note = NoteModel(author_id=self.user.id, **kwargs)
+        note.save()
+        print()
+        edit_note_data = {
+            "text": "Text old",
+            "private": False
+        }
+        res = self.client.put(f'/notes/{note.id}',
+                        data=json.dumps(edit_note_data),
+                        content_type='application/json',
+                        headers=self.headers
+                        )
+
+        edit_note_data = NoteModel.query.get(note.id)
+        print()
+
+        self.assertEqual(res.status_code, 200)
 
     def test_delete_note(self):
         """
