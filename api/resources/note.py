@@ -5,6 +5,7 @@ from api.schemas.note import note_schema, notes_schema
 from flask_apispec import marshal_with, use_kwargs, doc
 from flask_apispec.views import MethodResource
 from webargs import fields
+from sqlalchemy import or_
 
 
 @doc(description='Api for notes.', tags=['Users'])
@@ -80,6 +81,7 @@ class NotesListResource(MethodResource):
         note.save()
         return note_schema.dump(note), 201
 
+
 @doc(tags=["Notes"])
 class NoteAddTagResource(MethodResource):
     @doc(summary="Add tags to note")
@@ -93,3 +95,12 @@ class NoteAddTagResource(MethodResource):
             note.tags.append(tag)
         note.save()
         return {}
+
+@doc(tags=["Notes"])
+class NotesFilterResource(MethodResource):
+   @use_kwargs({"tags": fields.List(fields.Str())}, location=("query"))
+   def get(self, **kwargs):
+       # NoteModel.query.filter(or_(NoteModel.tags==))
+       for tag_name in kwargs:
+           NoteModel.query.filter(NoteModel.tags.has(name=tag_name)).all()
+       return {}

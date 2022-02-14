@@ -47,3 +47,5 @@ class TagsListResource(MethodResource):
         tag.save()
         return tag, 201
 
+    def delete(self, tag_id):
+        ...

@@ -1,5 +1,5 @@
 from api import api, app, docs
-from api.resources.note import NoteResource, NotesListResource, NoteAddTagResource
+from api.resources.note import NoteResource, NotesListResource, NoteAddTagResource, NotesFilterResource
 from api.resources.user import UserResource, UsersListResource
 from api.resources.auth import TokenResource
 from api.resources.tag import TagResourse, TagsListResource
@@ -28,6 +28,9 @@ api.add_resource(NoteResource,
 api.add_resource(NoteAddTagResource,
                  '/notes/<int:note_id>/tags',  # GET, PUT, DELETE
                  )
+api.add_resource(NotesFilterResource,
+                 '/notes/filter',  # GET
+                 )
 api.add_resource(TagsListResource,
                  '/tags', # GET, POST
                  )
@@ -40,6 +43,7 @@ docs.register(UsersListResource)
 docs.register(NoteResource)
 docs.register(NotesListResource)
 docs.register(NoteAddTagResource)
+docs.register(NotesFilterResource)
 docs.register(TagResourse)
 docs.register(TagsListResource)
 
