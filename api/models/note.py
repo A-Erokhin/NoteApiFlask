@@ -14,6 +14,7 @@ class NoteModel(db.Model):
     text = db.Column(db.String(255), unique=False, nullable=False)
     private = db.Column(db.Boolean(), default=True, nullable=False)
     tags = db.relationship(TagModel, secondary=tags, lazy='subquery', backref=db.backref('notes', lazy=True))
+    archive = db.Column(db.Boolean(), default=False)
 
     def save(self):
         db.session.add(self)

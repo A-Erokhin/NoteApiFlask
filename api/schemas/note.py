@@ -1,6 +1,7 @@
 from api import ma
 from api.models.note import NoteModel
 from api.schemas.user import UserSchema
+from api.schemas.tag import TagSchema
 
 
 #       schema        flask-restful
@@ -14,6 +15,8 @@ class NoteSchema(ma.SQLAlchemySchema):
     text = ma.auto_field()
     private = ma.auto_field()
     author = ma.Nested(UserSchema())
+    tags = ma.Nested(TagSchema(many=True))
+
     _links = ma.Hyperlinks({
         'self': ma.URLFor('noteresource', values=dict(note_id="<id>")),
         'collection': ma.URLFor('noteslistresource')
