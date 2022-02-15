@@ -8,7 +8,7 @@ from webargs import fields
 from sqlalchemy import or_
 
 
-@doc(description='Api for notes.', tags=['Users'])
+@doc(description='Api for notes.', tags=['Notes'])
 class NoteResource(MethodResource):
     @auth.login_required
     def get(self, note_id):
@@ -61,7 +61,7 @@ class NoteResource(MethodResource):
         return note_schema.dump(note), 200
 
 
-@doc(description='Api for notes.', tags=['Users'])
+@doc(description='Api for notes.', tags=['Notes'])
 class NotesListResource(MethodResource):
     def get(self):
         notes = NoteModel.query.all()

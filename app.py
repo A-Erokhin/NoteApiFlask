@@ -23,7 +23,7 @@ api.add_resource(NotesListResource,
                  '/notes',  # GET, POST
                  )
 api.add_resource(NoteResource,
-                 '/notes/<int:note_id>',  # GET, PUT, DELETE
+                 '/notes_list/<int:note_id>',  # GET, PUT, DELETE
                  )
 api.add_resource(NoteAddTagResource,
                  '/notes/<int:note_id>/tags',  # GET, PUT, DELETE

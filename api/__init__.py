@@ -17,6 +17,12 @@ security_definitions = {
     }
 }
 
+# Общие настройки логгера
+logging.basicConfig(filename='record.log',
+                   level=logging.ERROR,
+                   format=f'%(asctime)s %(levelname)s %(name)s : %(message)s')
+
+
 app = Flask(__name__)
 app.config.from_object(Config)
 app.config.update({
