@@ -1,5 +1,7 @@
 from api import api, app, docs
-from api.resources.note import NoteResource, NotesListResource, NoteAddTagResource, NotesFilterResource, NoteFromArchiveResourse
+# from api.resources.note import NoteResource, NotesListResource, NoteAddTagResource, NotesFilterResource, NoteRestoreResourse
+# from api.resources.note import *
+from api.resources import note
 from api.resources.user import UserResource, UsersListResource
 from api.resources.auth import TokenResource
 from api.resources.tag import TagResourse, TagsListResource
@@ -19,19 +21,19 @@ api.add_resource(UserResource,
 api.add_resource(TokenResource,
                  '/auth/token')  # GET
 
-api.add_resource(NotesListResource,
+api.add_resource(note.NotesListResource,
                  '/notes',  # GET, POST
                  )
-api.add_resource(NoteResource,
-                 '/notes_list/<int:note_id>',  # GET, PUT, DELETE
+api.add_resource(note.NoteResource,
+                 '/notes/<int:note_id>',  # GET, PUT, DELETE
                  )
-api.add_resource(NoteFromArchiveResourse,
-                 '/notes_list/<int:note_id>',  # PUT
+api.add_resource(note.NoteRestoreResourse,
+                 '/notes/<int:note_id>/restore',  # PUT
                  )
-api.add_resource(NoteAddTagResource,
+api.add_resource(note.NoteAddTagResource,
                  '/notes/<int:note_id>/tags',  # GET, PUT, DELETE
                  )
-api.add_resource(NotesFilterResource,
+api.add_resource(note.NotesFilterResource,
                  '/notes/filter',  # GET
                  )
 api.add_resource(TagsListResource,
@@ -43,11 +45,11 @@ api.add_resource(TagResourse,
 
 docs.register(UserResource)
 docs.register(UsersListResource)
-docs.register(NoteResource)
-docs.register(NoteFromArchiveResourse)
-docs.register(NotesListResource)
-docs.register(NoteAddTagResource)
-docs.register(NotesFilterResource)
+docs.register(note.NoteResource)
+docs.register(note.NoteRestoreResourse)
+docs.register(note.NotesListResource)
+docs.register(note.NoteAddTagResource)
+docs.register(note.NotesFilterResource)
 docs.register(TagResourse)
 docs.register(TagsListResource)
 

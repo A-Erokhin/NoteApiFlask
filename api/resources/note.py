@@ -10,19 +10,20 @@ from helpers.shortcuts import get_or_404
 
 @doc(description='Api for notes.', tags=['Notes'])
 class NoteResource(MethodResource):
+    @doc(security=[{"basicAuth": []}])
+    @marshal_with(NoteSchema)
     @auth.login_required
     def get(self, note_id):
         """
         Пользователь может получить ТОЛЬКО свою заметку
         """
         author = g.user
-        note = NoteModel.query.get(note_id)
-        if not note:
-            abort(404, error=f"Note with id={note_id} not found")
+        note = get_or_404(NoteModel, note_id)
         if note.author != author:
             abort(403, error=f"Forbidden")
-        return note_schema.dump(note), 200
+        return note, 200
 
+    @doc(security=[{"basicAuth": []}])
     @auth.login_required
     def put(self, note_id):
         """
@@ -47,41 +48,37 @@ class NoteResource(MethodResource):
         note.save()
         return note_schema.dump(note), 200
 
+
+    @doc(summary="Delete note", description="Note to archive")
+    @doc(security=[{"basicAuth": []}])
     @auth.login_required
-    @doc(summary="Delete note")
     def delete(self, note_id):
-        """
-        Пользователь может удалять ТОЛЬКО свои заметки
-        """
-    #     note = NoteModel.query.get(note_id)
-    #     if note is None:
-    #         return f"Note with id {note_id} not found", 404
-    #     db.session.delete(note)
-    #     db.session.commit()
-    #     # raise NotImplemented("Метод не реализован")
-    #     # return f"Note with id {note_id} deleted", 200
-    #     return note_schema.dump(note), 200
+        auth_user = g.user  # Пользователь может удалять ТОЛЬКО свои заметки
+        note = get_or_404(NoteModel, note_id)
+        if auth_user != note.author:
+            abort(403)
+        note.delete()
+        return {}, 204 # no content
     #
     # def to_archive(self, note_id):
     #     note = NoteModel.query.get(note_id)
     #     if note is None:
     #         return f"Note with id {note_id} not found", 404
-        note.archive = True
-        note.save()
-        return f"Note with id {note_id} send to archive", 200
+    #     note = get_or_404(NoteModel, note_id)
+    #     note.archived = True
+    #     note.save()
+    #     return f"Note with id {note_id} send to archive", 200
 
 @doc(description='Api for notes.', tags=['Notes'])
-class NoteFromArchiveResourse(MethodResource):
+class NoteRestoreResourse(MethodResource):
 
-    @auth.login_required
+    # @auth.login_required
     @doc(summary="Recovery note from archive")
+    @marshal_with(NoteSchema)
     def put(self, note_id):
-        note = NoteModel.query.get(note_id)
-        if note is None:
-            return f"Note with id {note_id} not found", 404
-        note.archive = False
-        note.save()
-        return f"Note with id {note_id} returned from archive", 200
+        note = get_or_404(NoteModel, note_id)
+        note.restore()
+        return note, 200
 
 
 @doc(description='Api for notes.', tags=['Notes'])

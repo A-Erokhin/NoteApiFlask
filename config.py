@@ -14,3 +14,5 @@ class Config:
     RESTFUL_JSON = {
         'ensure_ascii': False,
     }
+    LANGUAGES = ['en', 'ru']
+
