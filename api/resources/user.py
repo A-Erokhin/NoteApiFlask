@@ -95,3 +95,10 @@ class UsersListResource(MethodResource):
         logging.info("User create successfully")
         # return user_schema.dump(user), 201
         return user, 201
+
+@doc(description='Api for notes.', tags=['Users'])
+class UsersSeacrhResource(MethodResource):
+    @marshal_with(UserSchema)
+    def get(self, namepart):
+        users = UserModel.query.filter(UserModel.username.like(f"%{namepart}%")).all()
+        return users, 201

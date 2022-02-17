@@ -2,7 +2,7 @@ from api import api, app, docs
 # from api.resources.note import NoteResource, NotesListResource, NoteAddTagResource, NotesFilterResource, NoteRestoreResourse
 # from api.resources.note import *
 from api.resources import note
-from api.resources.user import UserResource, UsersListResource
+from api.resources.user import UserResource, UsersListResource, UsersSeacrhResource
 from api.resources.auth import TokenResource
 from api.resources.tag import TagResourse, TagsListResource
 from config import Config
@@ -17,6 +17,8 @@ api.add_resource(UsersListResource,
                  '/users')  # GET, POST
 api.add_resource(UserResource,
                  '/users/<int:user_id>')  # GET, PUT, DELETE
+api.add_resource(UsersSeacrhResource,
+                 '/users/<string:namepart>')  # GET
 
 api.add_resource(TokenResource,
                  '/auth/token')  # GET
@@ -45,6 +47,7 @@ api.add_resource(TagResourse,
 
 docs.register(UserResource)
 docs.register(UsersListResource)
+docs.register(UsersSeacrhResource)
 docs.register(note.NoteResource)
 docs.register(note.NoteRestoreResourse)
 docs.register(note.NotesListResource)
