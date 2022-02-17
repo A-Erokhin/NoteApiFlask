@@ -18,9 +18,12 @@ class NoteResource(MethodResource):
         Пользователь может получить ТОЛЬКО свою заметку
         """
         author = g.user
-        note = get_or_404(NoteModel, note_id)
+        # note = get_or_404(NoteModel, note_id)
+        note = NoteModel.not_archived().get(note_id)
         if note.author != author:
             abort(403, error=f"Forbidden")
+        if note is None:
+            abort(404)
         return note, 200
 
     @doc(security=[{"basicAuth": []}])
@@ -84,7 +87,7 @@ class NoteRestoreResourse(MethodResource):
 @doc(description='Api for notes.', tags=['Notes'])
 class NotesListResource(MethodResource):
     def get(self):
-        notes = NoteModel.query.all()
+        notes = NoteModel.not_archived().query.all()
         return notes_schema.dump(notes), 200
 
     @doc(security=[{"basicAuth": []}])
