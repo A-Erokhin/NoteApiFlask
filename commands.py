@@ -1,6 +1,9 @@
 import click
 from api import app, db
 from api.models.user import UserModel
+from api.schemas.user import UserRequestSchema
+from config import BASE_DIR
+from sqlalchemy.exc import IntegrityError
 
 
 @app.cli.command('createsuperuser')
@@ -61,3 +64,22 @@ def remove_user(username, all):
     # else:
     #     user.delete()
     #     print(f"User {username} deleted successful!")
+
+
+
+@app.cli.command('fixture')
+@click.argument('param')
+def fixtures(param):
+    path_to_fixture = BASE_DIR / 'fixtures' / 'users.json'
+    with open(path_to_fixture, "r", encoding="UTF-8") as f:
+        users_data = UserRequestSchema(many=True).loads(f.read())
+        for user_data in users_data:
+            user = UserModel(**user_data)
+            db.session.add(user)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+                print(f"User {user.username} already exists")
+
+    print(f"{len(users_data)} users created")

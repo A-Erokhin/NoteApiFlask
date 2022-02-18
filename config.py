@@ -1,7 +1,8 @@
 import os
-import pathlib
+from pathlib import Path
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = Path(__file__).parent
 
 
 class Config:
